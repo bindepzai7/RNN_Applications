@@ -9,12 +9,47 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from torchtext.data.utils import get_tokenizer
 
-from SentimentClassifier import SentimentClassifier
-from WeatherForecastor import WeatherForecastModel
-
 st.set_page_config(page_title="RNN Apllications", page_icon="🌍")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+label_size = 1
+
+class SentimentClassifier(nn.Module):
+    def __init__(self, vocab_size, embedding_dim, hidden_size, n_layers, n_classes, dropout_prob):
+        super(SentimentClassifier, self).__init__()
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        self.rnn = nn.RNN(embedding_dim, hidden_size, n_layers, batch_first=True)
+        self.norm = nn.LayerNorm(hidden_size)
+        self.dropout = nn.Dropout(dropout_prob)
+        self.fc1 = nn.Linear(hidden_size, 16)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(16, n_classes)
+        
+    def forward(self, x):
+        x = self.embedding(x)
+        x, hn = self.rnn(x)
+        x = self.norm(x[:, -1, :])
+        x = self.dropout(x)
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        return x
+
+class WeatherForecastModel(nn.Module):
+    def __init__(self, embedding_dim, hidden_size, n_layers, dropout_prob):
+        super().__init__()
+        self.rnn = nn.RNN(embedding_dim, hidden_size, n_layers, batch_first=True)
+        self.norm = nn.LayerNorm(hidden_size)
+        self.dropout = nn.Dropout(dropout_prob)
+        self.fc = nn.Linear(hidden_size, label_size)
+        
+    def forward(self, x):
+        x, _ = self.rnn(x)
+        x = self.norm(x[:, -1, :])
+        x = self.dropout(x)
+        return self.fc(x)
+    
 
 @st.cache_resource
 def load_vocab():

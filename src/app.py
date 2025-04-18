@@ -7,11 +7,7 @@ import unidecode
 import matplotlib.pyplot as plt
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-from nltk.tokenize import word_tokenize
-import nltk
-
-nltk.download("punkt")
-nltk.download("stopwords")
+from torchtext.data.utils import get_tokenizer
 
 st.set_page_config(page_title="RNN Apllications", page_icon="🌍")
 
@@ -53,6 +49,7 @@ class WeatherForecastModel(nn.Module):
         x = self.norm(x[:, -1, :])
         x = self.dropout(x)
         return self.fc(x)
+    
 
 @st.cache_resource
 def load_vocab():
@@ -78,12 +75,9 @@ vocab = load_vocab()
 model1 = load_model1(len(vocab))
 model2 = load_model2()
 
-# Replace torchtext tokenizer with nltk
+tokenizer = get_tokenizer('basic_english')
 english_stop_words = stopwords.words('english')
 stemmer = PorterStemmer()
-
-def tokenizer(text):
-    return word_tokenize(text)
 
 def text_normalize(text):
     text = text.lower()

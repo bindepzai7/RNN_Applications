@@ -1,7 +1,5 @@
 # RNN Applications
 
-Live demo: [https://bindepzai-rnn-applications.streamlit.app/](https://bindepzai-rnn-applications.streamlit.app/)
-
 This project demonstrates two practical applications of Recurrent Neural Networks (RNNs) implemented in PyTorch and deployed using Streamlit.
 
 ---

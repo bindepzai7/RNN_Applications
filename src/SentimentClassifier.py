@@ -11,9 +11,13 @@ import matplotlib.pyplot as plt
 import re
 import string
 import nltk
+nltk.download('stopwords')
+
 import unidecode
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
+
+
 
 from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
